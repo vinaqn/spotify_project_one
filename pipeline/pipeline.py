@@ -13,3 +13,4 @@ spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 spotify_client.get_artist("7GlBOeep6PqTfFi59PTUUN")
 
 # TESTING PUSH -Thomas
+# TEST PUSH 2 -Thomas
