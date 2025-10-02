@@ -13,6 +13,7 @@ The users of our dataset will be the data analytics team.
 
 ## Source
 Dataset	Spotify API(REST API)
+https://developer.spotify.com/documentation/web-api
 
 ## Solution Architecture 	
 TBA
