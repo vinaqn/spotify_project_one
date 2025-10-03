@@ -7,6 +7,6 @@ def extract_artist_id_list(file_path: str) ->pd.DataFrame:
     return df
 
 
-file_path="data/artist_ids.csv"
-
-print(extract_artist_id_list(file_path=file_path))
+# test
+# file_path="data/artist_ids.csv"
+# print(extract_artist_id_list(file_path=file_path))
