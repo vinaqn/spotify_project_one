@@ -1,2 +1,3 @@
 *.env
 get_list_of_artists.py
+__pycache__/
