@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
-from sqlalchemy.dialects import postresql
+from sqlalchemy.dialects import postgresql
 
 class PosgreSqlClient:
     """a client to connect to a postgresql database"""
@@ -31,4 +31,8 @@ class PosgreSqlClient:
         )
 
         #engine
-        self.engine=create_engine(connection_url)
+        try: 
+            self.engine=create_engine(connection_url)
+            print("Database connected")
+        except:
+            print("Did not connect to database")
