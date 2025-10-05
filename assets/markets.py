@@ -7,7 +7,6 @@ load_dotenv()
 API_KEY_ID = os.environ.get("spotify_client_id")
 API_SECRET_KEY = os.environ.get("spotify_client_secret")
 
-#to be ran after track.py to get album data
 def get_markets(SpotifyApiClient=SpotifyApiClient) -> list:
     """This function returns all the markets that spotify is available in"""
 
@@ -15,7 +14,9 @@ def get_markets(SpotifyApiClient=SpotifyApiClient) -> list:
 
     response_json=requests.get(f"{SpotifyApiClient.base_url}/markets",headers=header).json()
 
-    return response_json
+    markets = response_json
+    
+    return markets
 
 
 #tests 
