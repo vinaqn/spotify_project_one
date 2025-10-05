@@ -1,3 +1,3 @@
 *.env
-get_list_of_artists.py
+*.DS_Store
 __pycache__/
