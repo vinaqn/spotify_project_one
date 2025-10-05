@@ -10,7 +10,7 @@ load_dotenv()
 API_KEY_ID = os.environ.get("spotify_client_id")
 API_SECRET_KEY = os.environ.get("spotify_client_secret")
 
-def get_tracks(SpotifyApiClient =SpotifyApiClient,track_ids=pd.DataFrame) -> pd.DataFrame:
+def get_tracks(SpotifyApiClient=SpotifyApiClient,track_ids=pd.DataFrame) -> pd.DataFrame:
     """This function gets all the tracks available on spotify"""
     #construct the header to pass in the access token
     header={"Authorization": f"{SpotifyApiClient.token_type} {SpotifyApiClient.access_token}"}
@@ -37,14 +37,17 @@ def get_tracks(SpotifyApiClient =SpotifyApiClient,track_ids=pd.DataFrame) -> pd.
         main_list.extend(response_json['tracks'])
 
     #print (pd.DataFrame(main_list).head())
-    return pd.DataFrame(main_list)
+    #print(main_list[0])
+    return main_list
 
-#tests
-spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
+# #tests
+# spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
-#tracks_id5000 is a small sample of track_ids for testing purposes(saves time)
-file_path="data/track_ids5000.csv"
-track_list=extract_track_id_list(file_path=file_path)
+# #tracks_id5000 is a small sample of track_ids for testing purposes(saves time)
+# file_path="data/track_ids5000.csv"
+# track_list=extract_track_id_list(file_path=file_path)
 
-tester = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list)
-#tester.to_csv("tester.csv",index=False)
+# tester = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list)
+# print (tester[0]['album']['uri'])
+# print("hello world")
+# #tester.to_csv("tester.csv",index=False)
