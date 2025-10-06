@@ -54,7 +54,8 @@ def track_id_dict(tracks=list) -> list:
             'album_name' : tracks[i]['album']['name'],
             'album_id' : tracks[i]['album']['uri'][14:],
             'album_type' : tracks[i]['album']['album_type'],
-            'arist_name' : tracks[i]['album']['artists'][0]['name'],
+            'artist_name' : tracks[i]['album']['artists'][0]['name'],
+            'artist_id' : tracks[i]['album']['artists'][0]['id'],
             'markets' : tracks[i]['album']['available_markets']
         }
 
@@ -67,13 +68,14 @@ def track_id_dict(tracks=list) -> list:
 spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
 #tracks_id5000 is a small sample of track_ids for testing purposes(saves time)
-file_path="data/track_ids100.csv"
+file_path="data/track_ids.csv"
 track_list=extract_track_id_list(file_path=file_path)
 
 tester = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list)
 track_dict_result = track_id_dict(tester)
 df = pd.DataFrame(track_dict_result)
-#print (df[['album_name','track_name']])
+print (df[['artist_name','artist_id']])
+df.to_csv("full_artist_ids.csv",index=False)
 #print (track_dict_result[0:10])
 
 # print (tester[0]['album']['uri'])
