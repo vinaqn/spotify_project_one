@@ -49,7 +49,7 @@ def track_id_dict(tracks=list) -> list:
 
     for i in range(0,len(tracks)):        
         track_dict = {
-            'track_name' : tracks[i]['album']['name'],
+            'track_name' : tracks[i]['name'],
             'track_id' : tracks[i]['id'],
             'album_name' : tracks[i]['album']['name'],
             'album_id' : tracks[i]['album']['uri'][14:],
@@ -72,8 +72,9 @@ track_list=extract_track_id_list(file_path=file_path)
 
 tester = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list)
 track_dict_result = track_id_dict(tester)
-
-print (track_dict_result[0:10])
+df = pd.DataFrame(track_dict_result)
+#print (df[['album_name','track_name']])
+#print (track_dict_result[0:10])
 
 # print (tester[0]['album']['uri'])
 # print("hello world")
