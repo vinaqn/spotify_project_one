@@ -3,7 +3,16 @@ from connectors.spotify import SpotifyApiClient
 from connectors.postgres import PostgreSqlClient
 from assets.artist_id_list import extract_artist_id_list,load_artist_id_list
 from assets.artist import construct_artist_data_dict, load_artist
+from assets.pipeline_logger import PipelineLogger
 import os
+
+pipeline_logger=PipelineLogger("spotify_project","logs")
+
+
+pipeline_logger.logger.info(f"Starting {pipeline_logger.pipeline_name}")
+
+
+pipeline_logger.logger.info(f"Loading environment variables")
 
 load_dotenv()
 
@@ -21,10 +30,12 @@ DB_PORT = os.environ.get("DB_PORT")
 
 
 
-
-
+#instantiate Spotify API Client
+pipeline_logger.logger.info(f"Creating Spotify API client")
 spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
+#instantiate PostgreSQL client
+pipeline_logger.logger.info(f"Creating PostgreSQL client")
 postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
                                 db_database_name=DB_DATABASE_NAME,
                                 db_username=DB_USERNAME,
@@ -32,15 +43,20 @@ postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
                                 db_port=DB_PORT)
 
 
-#test extracting and loading artist_ids
+#extracting and loading artist_ids
+pipeline_logger.logger.info(f"Extracting artist_ids")
 artist_id_df=extract_artist_id_list("data/artist_ids.csv")
+
+pipeline_logger.logger.info(f"Loading artist_ids into database")
 load_artist_id_list(PostgresSqlClient=postgres_client,df=artist_id_df)
 
-load_artist_id_list(PostgresSqlClient=postgres_client,df=artist_id_df)
+
 
 #extract and load in artist info
+pipeline_logger.logger.info(f"Extracting artist info")
 artist_list=construct_artist_data_dict(artist_ids=artist_id_df,SpotifyApiClient=spotify_client)
 
+pipeline_logger.logger.info(f"Loading artist info into database")
 load_artist(PostgresSqlClient=postgres_client,list=artist_list)
 
 
