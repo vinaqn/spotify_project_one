@@ -33,21 +33,49 @@ def get_tracks(SpotifyApiClient=SpotifyApiClient,track_ids=pd.DataFrame) -> pd.D
         ids = ','.join(sub_list)
         #make the API call with the list of 50 ids
         response_json=requests.get(f"{SpotifyApiClient.base_url}/tracks?ids={ids}",headers=header).json()
+        # print ("hello world")
+        # print (response_json)
         #append the response to the main_list of tracks
         main_list.extend(response_json['tracks'])
 
-    #print (pd.DataFrame(main_list).head())
-    #print(main_list[0])
+    #print (main_list[10])
+    # print (main_list[10]['album']['artists'][0]['name'])
+    # print (main_list[10]['album']['name'])
     return main_list
 
-# #tests
-# spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
+def track_id_dict(tracks=list) -> list:
+    track_dict = {}
+    track_dict_list = []
 
-# #tracks_id5000 is a small sample of track_ids for testing purposes(saves time)
-# file_path="data/track_ids5000.csv"
-# track_list=extract_track_id_list(file_path=file_path)
+    for i in range(0,len(tracks)):        
+        track_dict = {
+            'track_name' : tracks[i]['album']['name'],
+            'track_id' : tracks[i]['id'],
+            'album_name' : tracks[i]['album']['name'],
+            'album_id' : tracks[i]['album']['uri'][14:],
+            'album_type' : tracks[i]['album']['album_type'],
+            'arist_name' : tracks[i]['album']['artists'][0]['name'],
+            'markets' : tracks[i]['album']['available_markets']
+        }
 
-# tester = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list)
+        track_dict_list.append(track_dict)
+
+    return track_dict_list
+
+
+#tests
+spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
+
+#tracks_id5000 is a small sample of track_ids for testing purposes(saves time)
+file_path="data/track_ids100.csv"
+track_list=extract_track_id_list(file_path=file_path)
+
+tester = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list)
+track_dict_result = track_id_dict(tester)
+
+print (track_dict_result[0:10])
+
 # print (tester[0]['album']['uri'])
 # print("hello world")
-# #tester.to_csv("tester.csv",index=False)
+# print(tester[0])
+#tester.to_csv("tester.csv",index=False)
