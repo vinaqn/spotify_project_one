@@ -1,38 +1,42 @@
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
-from sqlalchemy.dialects import postgresql
 
 class PosgreSqlClient:
     """a client to connect to a postgresql database"""
     
     def __init__(self,
-                 server_name: str,
-                 database_name:str, 
-                 username: str,
-                 password: str,
-                 port: int =5432
+                 db_server_name: str,
+                 db_database_name:str, 
+                 db_username: str,
+                 db_password: str,
+                 db_port: int =5432
                  ):
         
         #set the database details
-        self.host_name=server_name
-        self.database_name=database_name
-        self.username=username
-        self.password=password
-        self.port=port
+        self.host_name=db_server_name
+        self.database_name=db_database_name
+        self.username=db_username
+        self.password=db_password
+        self.port=db_port
 
         #connection url to pass into create engine
         connection_url = URL.create(
             drivername="postgresql+pg8000",
-            username=username,
-            password=password,
-            host=server_name,
-            port=port,
-            database=database_name,
+            username=db_username,
+            password=db_password,
+            host=db_server_name,
+            port=db_port,
+            database=db_database_name,
         )
 
         #engine
         try: 
             self.engine=create_engine(connection_url)
-            print("Database connected")
+
+            with self.engine.connect() as connection:
+                    connection.execute("SELECT 1")
+                    print("Connection is alive and responsive.")
+        
         except:
-            print("Did not connect to database")
+             print("Could not connect to the database. Check your connection string.")
+
