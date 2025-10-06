@@ -6,6 +6,8 @@ import requests
 from assets.track import get_tracks
 from assets.track_id_list import extract_track_id_list
 
+#Sabrina Carpenter album: 1aqg30bNvLSWgShZgX4oop
+
 load_dotenv()
 
 API_KEY_ID = os.environ.get("spotify_client_id")
@@ -36,11 +38,38 @@ def get_albums(SpotifyApiClient=SpotifyApiClient,album_ids=list) -> list:
 def album_id_list(tracks=list) -> list:
     album_id_list = []
     for track in range(0,len(tracks)):
-        album_id_list.append(tracks[track]['album']['uri'][14:])
+        album_id_list.append(tracks[track]['album']['uri'][14:]) # type: ignore
 
     return album_id_list
 
-#tests 
+#to be ran last, should give us the structured album data
+def get_album_dict(albums_list=list) -> list:
+    album_dict = {}
+    album_dict_list = []
+
+    for i in range(0,len(albums_list)):        
+        album_dict = {
+            'album_name' : albums_list[i]['name'],
+            'album_id' : albums_list[i]['id'],
+            'album_type' : albums_list[i]['album_type'],
+            'arist_name' : albums_list[i]['artists'][0]['name'],
+            'album_release_date' : albums_list[i]['release_date'],
+            'total_tracks' : albums_list[i]['tracks']['total'],
+            'track_list' : albums_list[i]['tracks']['items'][0]['name'],
+            'label' : albums_list[i]['label'],
+            'popularity' : albums_list[i]['popularity'],
+            'markets' : albums_list[i]['available_markets']
+        }
+
+        if len(albums_list[i]['tracks']['items']) > 1:
+            for j in range(1,len(albums_list[i]['tracks']['items'])):
+                album_dict['track_list'] = album_dict['track_list'] + ", " + albums_list[i]['tracks']['items'][j]['name']
+
+        album_dict_list.append(album_dict)
+
+    return album_dict_list
+
+#tests ----------------------------------------------
 
 spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
@@ -56,4 +85,12 @@ album_ids = album_id_list(tester)
 #print("hello world")
 #print(album_ids[0])
 album_info = get_albums(SpotifyApiClient=spotify_client,album_ids=album_ids)
-print (album_info[0:2])
+#print(album_info[1])
+df = pd.DataFrame(album_info)
+# print (album_info[3])
+#print (df.iloc[3])
+
+album_dict_result = get_album_dict(album_info)
+df2 = pd.DataFrame(album_dict_result)
+print (df2[['album_name','arist_name','total_tracks','track_list']])
+#print (album_dict_result[0])
