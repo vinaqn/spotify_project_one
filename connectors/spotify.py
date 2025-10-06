@@ -31,7 +31,3 @@ class SpotifyApiClient:
         self.token_type=auth_response.json()['token_type']
 
 
-    # def get_artist(self,artist_id:str):
-    #     header={"Authorization": f"{self.token_type} {self.access_token}"}
-    #     response=requests.get(f"{self.base_url}/artists/{artist_id}",headers=header)
-    #     return print(response.json())
