@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL
 
-class PosgreSqlClient:
+class PostgreSqlClient:
     """a client to connect to a postgresql database"""
     
     def __init__(self,
