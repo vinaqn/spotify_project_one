@@ -40,3 +40,5 @@ class PostgreSqlClient:
         except:
              print("Could not connect to the database. Check your connection string.")
 
+        
+

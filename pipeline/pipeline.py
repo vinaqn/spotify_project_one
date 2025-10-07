@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 from connectors.spotify import SpotifyApiClient
 from connectors.postgres import PostgreSqlClient
 from assets.artist_id_list import extract_artist_id_list,load_artist_id_list
-from assets.artist import construct_artist_data_dict, load_artist
+from assets.artist import get_artists, load_artist
 from assets.pipeline_logger import PipelineLogger
 import os
 
@@ -45,19 +45,15 @@ postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
 
 #extracting and loading artist_ids
 pipeline_logger.logger.info(f"Extracting artist_ids")
-artist_id_df=extract_artist_id_list("data/artist_ids.csv")
-
-pipeline_logger.logger.info(f"Loading artist_ids into database")
-load_artist_id_list(PostgresSqlClient=postgres_client,df=artist_id_df)
-
 
 
 #extract and load in artist info
 pipeline_logger.logger.info(f"Extracting artist info")
-artist_list=construct_artist_data_dict(artist_ids=artist_id_df,SpotifyApiClient=spotify_client)
+artist_id_df=extract_artist_id_list("data/artist_ids.csv")
+artist_dict_list=get_artists(SpotifyApiClient=spotify_client, artist_ids=artist_id_df)
 
 pipeline_logger.logger.info(f"Loading artist info into database")
-load_artist(PostgresSqlClient=postgres_client,list=artist_list)
+load_artist(PostgresSqlClient=postgres_client, list=artist_dict_list)
 
 
 # TESTING PUSH -Thomas
