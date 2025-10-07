@@ -7,7 +7,10 @@ from sqlalchemy import Table, MetaData,Column,String, Integer,DateTime
 from sqlalchemy.dialects import postgresql
 
 
+<<<<<<< HEAD
+=======
 #to be ran after track.py to get album data
+>>>>>>> a6b03a3fff5a2ed64903d171bd0882ec93868359
 def get_categories(SpotifyApiClient=SpotifyApiClient) -> list:
     """This function returns all the categories that spotify has"""
 
