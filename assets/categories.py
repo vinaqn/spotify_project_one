@@ -7,6 +7,10 @@ load_dotenv()
 API_KEY_ID = os.environ.get("spotify_client_id")
 API_SECRET_KEY = os.environ.get("spotify_client_secret")
 
+<<<<<<< HEAD
+=======
+#to be ran after track.py to get album data
+>>>>>>> a6b03a3fff5a2ed64903d171bd0882ec93868359
 def get_categories(SpotifyApiClient=SpotifyApiClient) -> list:
     """This function returns all the categories that spotify has"""
 
