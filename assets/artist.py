@@ -5,8 +5,9 @@ import os
 import requests
 from assets.artist_id_list import extract_artist_id_list
 from connectors.postgres import PostgreSqlClient
-from sqlalchemy import Table, Column, MetaData, String,Integer
+from sqlalchemy import Table, Column, MetaData, String,Integer,DateTime
 from sqlalchemy.dialects import postgresql
+import time
 
 
 load_dotenv()
@@ -16,38 +17,44 @@ API_SECRET_KEY = os.environ.get("spotify_client_secret")
 
 
 
-def get_artist(SpotifyApiClient =SpotifyApiClient,artist_id=str) -> pd.DataFrame:
-    """This function gets data about one artist based on the artist_id passed in"""
+def get_artists(SpotifyApiClient =SpotifyApiClient,artist_ids=pd.DataFrame) -> dict:
+    """This function gets data about artists, 50 at a time. stores the data points as
+    a string of dictionary"""
     
     #construct the header to pass in the access token
     header={"Authorization": f"{SpotifyApiClient.token_type} {SpotifyApiClient.access_token}"}
-    
-    
-    response_json=requests.get(f"{SpotifyApiClient.base_url}/artists/{artist_id}",headers=header).json()
 
-    artist_dict = {'artist_id': response_json['id'],
-                   'artist': response_json['name'],
-                   'genres': response_json['genres'],
-                   'popularity': response_json['popularity'],
-                   'total_followers':response_json['followers']['total']       
-    }
-    return artist_dict
-
-def construct_artist_data_dict(artist_ids=pd.DataFrame, SpotifyApiClient=SpotifyApiClient) ->list:
-    """this function constructs a list of artist dictionaries"""
+    #get list of artists
+    artist_list=artist_ids['artist_id'].tolist()
 
     dict_list=[]
 
-    #loops through the list of artist ids
-    for index,row in artist_ids.iterrows():
-        
-        #get artist info from API
-        dict=get_artist(SpotifyApiClient=SpotifyApiClient,artist_id=row['artist_id'])
+    extract_time=time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
 
-        #append artist info into a list
-        dict_list.append(dict)
+    #pass 50 ids at a time
+    for i in range(0,len(artist_list),50):
+
+        #get sub_list of 50 ids
+        sub_list=artist_list[i:i+50]
+        ids=','.join(sub_list)
+
+        
+        response_json=requests.get(f"{SpotifyApiClient.base_url}/artists/?ids={ids}",headers=header).json()
+
+        #loop through the response_json and form a dictionary for each artist
+        for y in range (0,len(sub_list)):
+
+            artist_dict = {'artist_id': response_json['artists'][y]['id'],
+                        'artist': response_json['artists'][y]['name'],
+                        'genres': response_json['artists'][y]['genres'],
+                        'popularity': response_json['artists'][y]['popularity'],
+                        'total_followers':response_json['artists'][y]['followers']['total'],
+                        'last_modified': extract_time       
+            }
+            dict_list.append(artist_dict)
 
     return dict_list
+
 
 def load_artist(PostgresSqlClient: PostgreSqlClient, list:list):
     metadata=MetaData()
@@ -58,7 +65,8 @@ def load_artist(PostgresSqlClient: PostgreSqlClient, list:list):
                           Column('artist',String),
                           Column('genres',String),
                           Column('popularity',Integer),
-                          Column('total_followers',Integer)
+                          Column('total_followers',Integer),
+                          Column('last_modified',DateTime)
     )
 
     #creates the table if does not exist
@@ -79,11 +87,13 @@ def load_artist(PostgresSqlClient: PostgreSqlClient, list:list):
 
 
 ### tests
-spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
+# spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
 
-file_path="data/artist_ids.csv"
-artist_list=extract_artist_id_list(file_path=file_path)
+# file_path="data/artist_ids.csv"
+# artist_list=extract_artist_id_list(file_path=file_path)
 
-# dict_list=construct_artist_data_dict(artist_ids=artist_list,SpotifyApiClient=spotify_client)
+
+
+# dict_list=get_artists(SpotifyApiClient=spotify_client, artist_ids=artist_list)
 # load_artist(PostgresSqlClient=PostgreSqlClient, list=dict_list)
