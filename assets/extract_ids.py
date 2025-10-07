@@ -23,7 +23,7 @@ df = pd.read_csv(filepath)
 
 df = df.iloc[:-9000]
 df.to_csv("full_artist_info.csv",index=False)
-print (df)
+print(df)
 
 #tests
 # filepath="data/full_artist_ids.csv"
