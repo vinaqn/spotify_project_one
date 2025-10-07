@@ -52,7 +52,7 @@ def get_album_dict(albums_list=list) -> list:
             'album_name' : albums_list[i]['name'],
             'album_id' : albums_list[i]['id'],
             'album_type' : albums_list[i]['album_type'],
-            'arist_name' : albums_list[i]['artists'][0]['name'],
+            'artist_name' : albums_list[i]['artists'][0]['name'],
             'album_release_date' : albums_list[i]['release_date'],
             'total_tracks' : albums_list[i]['tracks']['total'],
             'track_list' : albums_list[i]['tracks']['items'][0]['name'],
