@@ -33,6 +33,7 @@ def get_tracks(SpotifyApiClient=SpotifyApiClient,track_ids=pd.DataFrame) -> pd.D
         ids = ','.join(sub_list)
         #make the API call with the list of 50 ids
         response_json=requests.get(f"{SpotifyApiClient.base_url}/tracks?ids={ids}",headers=header).json()
+        
         # print ("hello world")
         # print (response_json)
         #append the response to the main_list of tracks
@@ -68,7 +69,7 @@ def track_id_dict(tracks=list) -> list:
 spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
 #tracks_id5000 is a small sample of track_ids for testing purposes(saves time)
-file_path="data/track_ids.csv"
+file_path="data/track_ids100.csv"
 track_list=extract_track_id_list(file_path=file_path)
 
 tester = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list)
