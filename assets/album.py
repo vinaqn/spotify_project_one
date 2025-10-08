@@ -4,7 +4,7 @@ import pandas as pd
 import os
 import requests
 from assets.track import get_tracks
-from assets.track_id_list import extract_track_id_list
+from assets.extract_ids import extract_track_id_list
 
 #Sabrina Carpenter album: 1aqg30bNvLSWgShZgX4oop
 
@@ -52,11 +52,7 @@ def get_album_dict(albums_list=list) -> list:
             'album_name' : albums_list[i]['name'],
             'album_id' : albums_list[i]['id'],
             'album_type' : albums_list[i]['album_type'],
-<<<<<<< HEAD
             'artist_name' : albums_list[i]['artists'][0]['name'],
-=======
-            'arist_name' : albums_list[i]['artists'][0]['name'],
->>>>>>> a6b03a3fff5a2ed64903d171bd0882ec93868359
             'album_release_date' : albums_list[i]['release_date'],
             'total_tracks' : albums_list[i]['tracks']['total'],
             'track_list' : albums_list[i]['tracks']['items'][0]['name'],
@@ -96,5 +92,5 @@ df = pd.DataFrame(album_info)
 
 album_dict_result = get_album_dict(album_info)
 df2 = pd.DataFrame(album_dict_result)
-print (df2[['album_name','arist_name','total_tracks','track_list']])
+#print (df2[['album_name','arist_name','total_tracks','track_list']])
 #print (album_dict_result[0])
