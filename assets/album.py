@@ -4,14 +4,13 @@ import pandas as pd
 import os
 import requests
 from assets.track import get_tracks
-from assets.track_id_list import extract_track_id_list
+from assets.extract_ids import extract_track_id_list
+from connectors.postgres import PostgreSqlClient 
+from sqlalchemy import Table, MetaData,Column, Integer, DateTime, String
+from sqlalchemy.dialects import postgresql
 
 #Sabrina Carpenter album: 1aqg30bNvLSWgShZgX4oop
 
-load_dotenv()
-
-API_KEY_ID = os.environ.get("spotify_client_id")
-API_SECRET_KEY = os.environ.get("spotify_client_secret")
 
 #to be ran after track.py to get album data
 def get_albums(SpotifyApiClient=SpotifyApiClient,album_ids=list) -> list:
@@ -36,11 +35,11 @@ def get_albums(SpotifyApiClient=SpotifyApiClient,album_ids=list) -> list:
     return main_list
 
 def album_id_list(tracks=list) -> list:
-    album_id_list = []
+    album_id_list = set() #using a set for deduplication
     for track in range(0,len(tracks)):
-        album_id_list.append(tracks[track]['album']['uri'][14:]) # type: ignore
+        album_id_list.add(tracks[track]['album']['uri'][14:]) # type: ignore
 
-    return album_id_list
+    return list(album_id_list)
 
 #to be ran last, should give us the structured album data
 def get_album_dict(albums_list=list) -> list:
@@ -49,15 +48,12 @@ def get_album_dict(albums_list=list) -> list:
 
     for i in range(0,len(albums_list)):        
         album_dict = {
-            'album_name' : albums_list[i]['name'],
             'album_id' : albums_list[i]['id'],
-            'album_type' : albums_list[i]['album_type'],
-<<<<<<< HEAD
-            'artist_name' : albums_list[i]['artists'][0]['name'],
-=======
-            'arist_name' : albums_list[i]['artists'][0]['name'],
->>>>>>> a6b03a3fff5a2ed64903d171bd0882ec93868359
+            'album_name' : albums_list[i]['name'],
+            'album_type' : albums_list[i]['album_type'], # type: ignore
+            'artist_id' : albums_list[i]['artists'][0]['id'],
             'album_release_date' : albums_list[i]['release_date'],
+            'release_date_precision' : albums_list[i]['release_date_precision'],
             'total_tracks' : albums_list[i]['tracks']['total'],
             'track_list' : albums_list[i]['tracks']['items'][0]['name'],
             'label' : albums_list[i]['label'],
@@ -73,28 +69,101 @@ def get_album_dict(albums_list=list) -> list:
 
     return album_dict_list
 
+
+def load_album(PostgreSqlClient=PostgreSqlClient, list=list):
+    metadata=MetaData()
+
+    #construct the metadata
+    album_table=Table('album',metadata,
+                          Column('album_id',String,primary_key=True),
+                          Column('album_name',String),
+                          Column('album_type',String),
+                          Column('artist_id',String),
+                          Column('album_release_date',String),
+                          Column('release_date_precision',String),
+                          Column('total_tracks',Integer),
+                          Column('track_list',String),
+                          Column('label',String),
+                          Column('popularity',Integer),
+                          Column('markets',String)
+    )
+
+    #creates the table if does not exist
+    metadata.create_all(PostgreSqlClient.engine)
+
+    #have to create the insert statement first to then create upsert statement
+    insert_statement=postgresql.insert(album_table).values(list)
+    
+    upsert_statement =insert_statement.on_conflict_do_update(
+        index_elements=['album_id'],
+        #for each column not part of the conflict key, update it to the new value
+        set_={c.key: c for c in insert_statement.excluded if c.key not in ['album_id']}) 
+    
+    PostgreSqlClient.engine.execute(upsert_statement)
+
+    print('uploaded to database')
+
+    return
+
+
 #tests ----------------------------------------------
+
+load_dotenv()
+
+API_KEY_ID = os.environ.get("spotify_client_id")
+API_SECRET_KEY = os.environ.get("spotify_client_secret")
+
+
+#database details
+DB_SERVER_NAME= os.environ.get("DB_SERVER_NAME")
+DB_DATABASE_NAME = os.environ.get("DB_DATABASE_NAME")
+DB_USERNAME = os.environ.get("DB_USERNAME")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_PORT = os.environ.get("DB_PORT")
+
+
+
 
 spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
+postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
+                                db_database_name=DB_DATABASE_NAME,
+                                db_username=DB_USERNAME,
+                                db_password=DB_PASSWORD,
+                                db_port=DB_PORT)
+
 #tracks_id5000 is a small sample of track_ids for testing purposes(saves time)
-file_path="data/track_ids100.csv"
+file_path="data/track_ids5000.csv"
 #returns a dataframe of the raw data from the preloaded CSV, not the API
 track_list=extract_track_id_list(file_path=file_path)
 
 #returns a list of raw data in a list, include album ids found in [index]['album']['uri']
+print("getting tracks and album ids")
 tester = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list) 
 #retruns a list of only the album ids
+
+print("extractin album ids")
 album_ids = album_id_list(tester)
 #print("hello world")
 #print(album_ids[0])
+
+
+
+
+print("passing in album ids to get album info")
 album_info = get_albums(SpotifyApiClient=spotify_client,album_ids=album_ids)
 #print(album_info[1])
-df = pd.DataFrame(album_info)
+#df = pd.DataFrame(album_info)
 # print (album_info[3])
 #print (df.iloc[3])
 
+
 album_dict_result = get_album_dict(album_info)
-df2 = pd.DataFrame(album_dict_result)
-print (df2[['album_name','arist_name','total_tracks','track_list']])
+
+#print(album_dict_result)
+
+print("loading in album data into database")
+load_album(PostgreSqlClient=postgres_client,list=album_dict_result) 
+# df2 = pd.DataFrame(album_dict_result)
+# print (df2[['album_name','arist_name','total_tracks','track_list']])
 #print (album_dict_result[0])
