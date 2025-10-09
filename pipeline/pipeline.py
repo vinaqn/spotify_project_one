@@ -5,7 +5,6 @@ from assets.artist_id_list import extract_artist_id_list,load_artist_id_list
 from assets.artist import get_artists, load_artist
 from assets.track import get_tracks, track_id_dict, load_tracks, load_track_ids
 from assets.categories import get_categories, load_categories
-#from assets.markets import get_markets, load_markets
 from assets.extract_ids import extract_track_id_list, extract_artist_id_list_from_track_ids
 from assets.album import get_albums, get_album_dict, load_album, album_id_list
 from assets.pipeline_logger import PipelineLogger
@@ -88,3 +87,5 @@ album_dict_result = get_album_dict(album_info)
 
 pipeline_logger.logger.info(f"Loading album info")
 load_album(PostgreSqlClient=postgres_client,list=album_dict_result) 
+
+
