@@ -59,28 +59,28 @@ def load_categories(PostgresSqlClient: PostgreSqlClient, list:list):
 
 
 #tests 
-load_dotenv()
+# load_dotenv()
 
-API_KEY_ID = os.environ.get("spotify_client_id")
-API_SECRET_KEY = os.environ.get("spotify_client_secret")
+# API_KEY_ID = os.environ.get("spotify_client_id")
+# API_SECRET_KEY = os.environ.get("spotify_client_secret")
 
-#database details
-DB_SERVER_NAME= os.environ.get("DB_SERVER_NAME")
-DB_DATABASE_NAME = os.environ.get("DB_DATABASE_NAME")
-DB_USERNAME = os.environ.get("DB_USERNAME")
-DB_PASSWORD = os.environ.get("DB_PASSWORD")
-DB_PORT = os.environ.get("DB_PORT")
+# #database details
+# DB_SERVER_NAME= os.environ.get("DB_SERVER_NAME")
+# DB_DATABASE_NAME = os.environ.get("DB_DATABASE_NAME")
+# DB_USERNAME = os.environ.get("DB_USERNAME")
+# DB_PASSWORD = os.environ.get("DB_PASSWORD")
+# DB_PORT = os.environ.get("DB_PORT")
 
-spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
+# spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
-postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
-                                db_database_name=DB_DATABASE_NAME,
-                                db_username=DB_USERNAME,
-                                db_password=DB_PASSWORD,
-                                db_port=DB_PORT)
+# postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
+#                                 db_database_name=DB_DATABASE_NAME,
+#                                 db_username=DB_USERNAME,
+#                                 db_password=DB_PASSWORD,
+#                                 db_port=DB_PORT)
 
 
 
-categories = get_categories(SpotifyApiClient=spotify_client)
+# categories = get_categories(SpotifyApiClient=spotify_client)
 
-load_categories(PostgresSqlClient=postgres_client,list=categories)
+# load_categories(PostgresSqlClient=postgres_client,list=categories)
