@@ -5,7 +5,7 @@ import os
 import requests
 from assets.track_id_list import extract_track_id_list
 from connectors.postgres import PostgreSqlClient
-from sqlalchemy import Table, Column, MetaData, String,Integer
+from sqlalchemy import Table, Column, MetaData, String
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -81,7 +81,7 @@ def load_tracks(PostgreSqlClient=PostgreSqlClient, track_list=list):
     upsert_statement=insert_statement.on_conflict_do_update(
         index_elements=['track_id'],
         #for each column not part of the conflict key, update it to the new value
-        set_={c.key: c for c in insert_statement.excluded if c.key not in ['album_id']}) 
+        set_={c.key: c for c in insert_statement.excluded if c.key not in ['track_id']}) 
     
     PostgreSqlClient.engine.execute(upsert_statement)
 
@@ -89,33 +89,57 @@ def load_tracks(PostgreSqlClient=PostgreSqlClient, track_list=list):
 
     return
 
-#tests --------
+def load_track_ids(PostgreSqlClient=PostgreSqlClient, track_ids=pd.DataFrame):
+    metadata=MetaData()
 
-load_dotenv()
+    #metadata
+    track_id_table=Table('track_id_list',metadata,
+                          Column('track_id',String,primary_key=True)    )
+
+    metadata.create_all(PostgreSqlClient.engine)
+
+    insert_statement=postgresql.insert(track_id_table).values(track_ids.to_dict(orient='records'))
+    
+    upsert_statement=insert_statement.on_conflict_do_nothing(
+        index_elements=['track_id']) 
+
+    
+    PostgreSqlClient.engine.execute(upsert_statement)
+
+    print('uploaded to database')
+
+    return
+
+# #tests --------
+
+# load_dotenv()
 
 
-API_KEY_ID = os.environ.get("spotify_client_id")
-API_SECRET_KEY = os.environ.get("spotify_client_secret")
+# API_KEY_ID = os.environ.get("spotify_client_id")
+# API_SECRET_KEY = os.environ.get("spotify_client_secret")
 
-DB_SERVER_NAME= os.environ.get("DB_SERVER_NAME")
-DB_DATABASE_NAME = os.environ.get("DB_DATABASE_NAME")
-DB_USERNAME = os.environ.get("DB_USERNAME")
-DB_PASSWORD = os.environ.get("DB_PASSWORD")
-DB_PORT = os.environ.get("DB_PORT")
+# DB_SERVER_NAME= os.environ.get("DB_SERVER_NAME")
+# DB_DATABASE_NAME = os.environ.get("DB_DATABASE_NAME")
+# DB_USERNAME = os.environ.get("DB_USERNAME")
+# DB_PASSWORD = os.environ.get("DB_PASSWORD")
+# DB_PORT = os.environ.get("DB_PORT")
 
-spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
+# spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
-postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
-                                db_database_name=DB_DATABASE_NAME,
-                                db_username=DB_USERNAME,
-                                db_password=DB_PASSWORD,
-                                db_port=DB_PORT)
+# postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
+#                                 db_database_name=DB_DATABASE_NAME,
+#                                 db_username=DB_USERNAME,
+#                                 db_password=DB_PASSWORD,
+#                                 db_port=DB_PORT)
 
-#tracks_id5000 is a small sample of track_ids for testing purposes(saves time)
-file_path="data/track_ids100.csv"
-track_list=extract_track_id_list(file_path=file_path)
+# #tracks_id5000 is a small sample of track_ids for testing purposes(saves time)
+# file_path="data/track_ids100.csv"
+# track_list=extract_track_id_list(file_path=file_path)
+# raw_track_table = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list)
+# track_dict_result = track_id_dict(raw_track_table)
 
-raw_track_table = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list)
-track_dict_result = track_id_dict(raw_track_table)
 
-load_tracks(PostgreSqlClient=postgres_client, track_list=track_dict_result)
+
+# #load_tracks(PostgreSqlClient=postgres_client, track_list=track_dict_result)
+
+# load_track_ids(PostgreSqlClient=postgres_client, track_ids=track_list)

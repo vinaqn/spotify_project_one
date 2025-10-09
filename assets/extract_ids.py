@@ -16,17 +16,3 @@ def extract_artist_id_list_from_track_ids(file_path: str) ->pd.DataFrame:
     artist_ids = df.drop_duplicates(subset='artist_id').reset_index(drop=True)
 
     return artist_ids
-
-# filepath="data/full_artist_ids.csv"
-
-# df = pd.read_csv(filepath)
-
-# df = df.iloc[:-9000]
-# df.to_csv("full_artist_info.csv",index=False)
-# print(df)
-
-#tests
-# filepath="data/full_artist_ids.csv"
-# df = extract_artist_id_list_from_track_ids(file_path=filepath)
-# print(df)
-#df.to_csv("artist_ids.csv",index=False)

@@ -8,6 +8,7 @@ from assets.extract_ids import extract_track_id_list
 from connectors.postgres import PostgreSqlClient 
 from sqlalchemy import Table, MetaData,Column, Integer, DateTime, String
 from sqlalchemy.dialects import postgresql
+from sqlalchemy.dialects.postgresql import ARRAY
 
 #Sabrina Carpenter album: 1aqg30bNvLSWgShZgX4oop
 
@@ -85,7 +86,7 @@ def load_album(PostgreSqlClient=PostgreSqlClient, list=list):
                           Column('track_list',String),
                           Column('label',String),
                           Column('popularity',Integer),
-                          Column('markets',String)
+                          Column('markets',ARRAY(String))
     )
 
     #creates the table if does not exist
@@ -108,62 +109,47 @@ def load_album(PostgreSqlClient=PostgreSqlClient, list=list):
 
 #tests ----------------------------------------------
 
-load_dotenv()
+# load_dotenv()
 
-API_KEY_ID = os.environ.get("spotify_client_id")
-API_SECRET_KEY = os.environ.get("spotify_client_secret")
-
-
-#database details
-DB_SERVER_NAME= os.environ.get("DB_SERVER_NAME")
-DB_DATABASE_NAME = os.environ.get("DB_DATABASE_NAME")
-DB_USERNAME = os.environ.get("DB_USERNAME")
-DB_PASSWORD = os.environ.get("DB_PASSWORD")
-DB_PORT = os.environ.get("DB_PORT")
+# API_KEY_ID = os.environ.get("spotify_client_id")
+# API_SECRET_KEY = os.environ.get("spotify_client_secret")
 
 
-
-
-spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
-
-postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
-                                db_database_name=DB_DATABASE_NAME,
-                                db_username=DB_USERNAME,
-                                db_password=DB_PASSWORD,
-                                db_port=DB_PORT)
-
-#tracks_id5000 is a small sample of track_ids for testing purposes(saves time)
-file_path="data/track_ids5000.csv"
-#returns a dataframe of the raw data from the preloaded CSV, not the API
-track_list=extract_track_id_list(file_path=file_path)
-
-#returns a list of raw data in a list, include album ids found in [index]['album']['uri']
-print("getting tracks and album ids")
-tester = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list) 
-#retruns a list of only the album ids
-
-print("extractin album ids")
-album_ids = album_id_list(tester)
-#print("hello world")
-#print(album_ids[0])
+# #database details
+# DB_SERVER_NAME= os.environ.get("DB_SERVER_NAME")
+# DB_DATABASE_NAME = os.environ.get("DB_DATABASE_NAME")
+# DB_USERNAME = os.environ.get("DB_USERNAME")
+# DB_PASSWORD = os.environ.get("DB_PASSWORD")
+# DB_PORT = os.environ.get("DB_PORT")
 
 
 
 
-print("passing in album ids to get album info")
-album_info = get_albums(SpotifyApiClient=spotify_client,album_ids=album_ids)
-#print(album_info[1])
-#df = pd.DataFrame(album_info)
-# print (album_info[3])
-#print (df.iloc[3])
+# spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
+# postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
+#                                 db_database_name=DB_DATABASE_NAME,
+#                                 db_username=DB_USERNAME,
+#                                 db_password=DB_PASSWORD,
+#                                 db_port=DB_PORT)
 
-album_dict_result = get_album_dict(album_info)
+# #tracks_id5000 is a small sample of track_ids for testing purposes(saves time)
+# file_path="data/track_ids5000.csv"
+# #returns a dataframe of the raw data from the preloaded CSV, not the API
+# track_list=extract_track_id_list(file_path=file_path)
 
-#print(album_dict_result)
+# #returns a list of raw data in a list, include album ids found in [index]['album']['uri']
+# print("getting tracks and album ids")
+# tester = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list) 
+# #retruns a list of only the album ids
 
-print("loading in album data into database")
-load_album(PostgreSqlClient=postgres_client,list=album_dict_result) 
-# df2 = pd.DataFrame(album_dict_result)
-# print (df2[['album_name','arist_name','total_tracks','track_list']])
-#print (album_dict_result[0])
+# print("extracting album ids")
+# album_ids = album_id_list(tester)
+
+# print("passing in album ids to get album info")
+# album_info = get_albums(SpotifyApiClient=spotify_client,album_ids=album_ids)
+
+# album_dict_result = get_album_dict(album_info)
+
+# print("loading in album data into database")
+# load_album(PostgreSqlClient=postgres_client,list=album_dict_result) 

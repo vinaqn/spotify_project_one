@@ -3,6 +3,11 @@ from connectors.spotify import SpotifyApiClient
 from connectors.postgres import PostgreSqlClient
 from assets.artist_id_list import extract_artist_id_list,load_artist_id_list
 from assets.artist import get_artists, load_artist
+from assets.track import get_tracks, track_id_dict, load_tracks, load_track_ids
+#from assets.categories import get_categories, load_categories
+#from assets.markets import get_markets, load_markets
+from assets.extract_ids import extract_track_id_list, extract_artist_id_list_from_track_ids
+#from assets.album import get_albums, load_albums
 from assets.pipeline_logger import PipelineLogger
 import os
 
@@ -42,10 +47,23 @@ postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
                                 db_password=DB_PASSWORD,
                                 db_port=DB_PORT)
 
+#load track_ids
+pipeline_logger.logger.info(f"Loading track ids into database")
+file_path="data/track_ids100.csv"
+track_ids = extract_track_id_list(file_path=file_path)
+load_track_ids(PostgreSqlClient=postgres_client, track_ids=track_ids)
+
+#extracting tracks
+pipeline_logger.logger.info(f"Extracting track_ids")
+track_ids = extract_track_id_list(file_path=file_path)
+raw_track_list = get_tracks(SpotifyApiClient=spotify_client, track_ids=track_ids)
+track_dict_result = track_id_dict(raw_track_list)
+
+#loading tracks
+load_tracks(PostgreSqlClient=postgres_client, track_list=track_dict_result)
 
 #extracting and loading artist_ids
 pipeline_logger.logger.info(f"Extracting artist_ids")
-
 
 #extract and load in artist info
 pipeline_logger.logger.info(f"Extracting artist info")
@@ -55,6 +73,3 @@ artist_dict_list=get_artists(SpotifyApiClient=spotify_client, artist_ids=artist_
 pipeline_logger.logger.info(f"Loading artist info into database")
 load_artist(PostgresSqlClient=postgres_client, list=artist_dict_list)
 
-
-# TESTING PUSH -Thomas
-# TEST PUSH 2 -Thomas
