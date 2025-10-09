@@ -15,7 +15,6 @@ def get_markets(SpotifyApiClient=SpotifyApiClient) -> list:
     response_json=requests.get(f"{SpotifyApiClient.base_url}/markets",headers=header).json()
 
     markets = response_json
-    
     return markets
 
 

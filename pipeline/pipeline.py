@@ -1,11 +1,9 @@
 from dotenv import load_dotenv
 from connectors.spotify import SpotifyApiClient
 from connectors.postgres import PostgreSqlClient
-from assets.artist_id_list import extract_artist_id_list,load_artist_id_list
-from assets.artist import get_artists, load_artist
+from assets.artist import get_artists, load_artist, artist_id_list
 from assets.track import get_tracks, track_id_dict, load_tracks, load_track_ids
 from assets.categories import get_categories, load_categories
-#from assets.markets import get_markets, load_markets
 from assets.extract_ids import extract_track_id_list, extract_artist_id_list_from_track_ids
 from assets.album import get_albums, get_album_dict, load_album, album_id_list
 from assets.pipeline_logger import PipelineLogger
@@ -49,7 +47,7 @@ postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
 
 #load track_ids
 pipeline_logger.logger.info(f"Loading track ids into database")
-file_path="data/track_ids100.csv"
+file_path="data/test_track_ids100.csv"
 track_ids = extract_track_id_list(file_path=file_path)
 load_track_ids(PostgreSqlClient=postgres_client, track_ids=track_ids)
 
@@ -67,8 +65,8 @@ pipeline_logger.logger.info(f"Extracting artist_ids")
 
 #extract and load in artist info
 pipeline_logger.logger.info(f"Extracting artist info")
-artist_id_df=extract_artist_id_list("data/artist_ids.csv")
-artist_dict_list=get_artists(SpotifyApiClient=spotify_client, artist_ids=artist_id_df)
+artist_id_list=artist_id_list(raw_track_list)
+artist_dict_list=get_artists(SpotifyApiClient=spotify_client, artist_list=artist_id_list)
 
 pipeline_logger.logger.info(f"Loading artist info into database")
 load_artist(PostgresSqlClient=postgres_client, list=artist_dict_list)
@@ -77,7 +75,7 @@ load_artist(PostgresSqlClient=postgres_client, list=artist_dict_list)
 pipeline_logger.logger.info(f"Extracting categories")
 categories = get_categories(SpotifyApiClient=spotify_client)
 
-pipeline_logger.logger.info(f"Loading album info")
+pipeline_logger.logger.info(f"Loading categories info")
 load_categories(PostgresSqlClient=postgres_client,list=categories)
 
 #extracting and loading albums
@@ -88,3 +86,5 @@ album_dict_result = get_album_dict(album_info)
 
 pipeline_logger.logger.info(f"Loading album info")
 load_album(PostgreSqlClient=postgres_client,list=album_dict_result) 
+
+
