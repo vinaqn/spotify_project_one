@@ -63,6 +63,37 @@ def track_id_dict(tracks=list) -> list:
 
     return track_dict_list
 
+def load_tracks(PostgreSqlClient=PostgreSqlClient, track_list=list):
+    metadata=MetaData()
+
+    #metadata
+    track_table=Table('album',metadata,
+                          Column('track_id',String,primary_key=True),
+                          Column('track_name',String),
+                          Column('album_name',String),
+                          Column('album_id',String),
+                          Column('album_type',String),
+                          Column('artist_name',String),
+                          Column('artist_id',Integer),
+                          Column('markets',String)
+    )
+
+    metadata.create_all(PostgreSqlClient.engine)
+
+    insert_statement=postgresql.insert(track_table).values(track_list)
+    
+    upsert_statement=insert_statement.on_conflict_do_update(
+        index_elements=['track_id'],
+        #for each column not part of the conflict key, update it to the new value
+        set_={c.key: c for c in insert_statement.excluded if c.key not in ['album_id']}) 
+    
+    PostgreSqlClient.engine.execute(upsert_statement)
+
+    print('uploaded to database')
+
+    return
+
+
 #tests --------
 spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
