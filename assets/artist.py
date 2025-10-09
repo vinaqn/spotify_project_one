@@ -15,6 +15,13 @@ load_dotenv()
 API_KEY_ID = os.environ.get("spotify_client_id")
 API_SECRET_KEY = os.environ.get("spotify_client_secret")
 
+def artist_id_list(tracks=list) -> list:
+    artist_id_list = set() #using a set for deduplication
+    for track in range(0,len(tracks)):
+        artist_id_list.add(tracks[track]['artists'][0]['id']) # type: ignore
+
+    return list(artist_id_list)
+
 
 
 def get_artists(SpotifyApiClient =SpotifyApiClient,artist_ids=pd.DataFrame) -> dict:
