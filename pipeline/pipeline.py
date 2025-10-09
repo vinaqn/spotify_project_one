@@ -46,25 +46,27 @@ postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
                                 db_port=DB_PORT)
 
 #load track_ids
-pipeline_logger.logger.info(f"Loading track ids into database")
+pipeline_logger.logger.info(f"Loading track ids from csv into database")
+
 file_path="data/test_track_ids100.csv"
 track_ids = extract_track_id_list(file_path=file_path)
 load_track_ids(PostgreSqlClient=postgres_client, track_ids=track_ids)
 
 #extracting tracks
-pipeline_logger.logger.info(f"Extracting track_ids")
+pipeline_logger.logger.info(f"Extracting track information from Spotify")
+
 track_ids = extract_track_id_list(file_path=file_path)
 raw_track_list = get_tracks(SpotifyApiClient=spotify_client, track_ids=track_ids)
 track_dict_result = track_id_dict(raw_track_list)
 
 #loading tracks
+pipeline_logger.logger.info(f"Loading track information into database")
+
 load_tracks(PostgreSqlClient=postgres_client, track_list=track_dict_result)
 
-#extracting and loading artist_ids
-pipeline_logger.logger.info(f"Extracting artist_ids")
 
 #extract and load in artist info
-pipeline_logger.logger.info(f"Extracting artist info")
+pipeline_logger.logger.info(f"Extracting artist info from Spotify")
 artist_id_list=artist_id_list(raw_track_list)
 artist_dict_list=get_artists(SpotifyApiClient=spotify_client, artist_list=artist_id_list)
 
@@ -72,19 +74,19 @@ pipeline_logger.logger.info(f"Loading artist info into database")
 load_artist(PostgresSqlClient=postgres_client, list=artist_dict_list)
 
 #extracting and loading categories
-pipeline_logger.logger.info(f"Extracting categories")
+pipeline_logger.logger.info(f"Extracting categories from Spotify")
 categories = get_categories(SpotifyApiClient=spotify_client)
 
-pipeline_logger.logger.info(f"Loading categories info")
+pipeline_logger.logger.info(f"Loading categories info into database")
 load_categories(PostgresSqlClient=postgres_client,list=categories)
 
 #extracting and loading albums
-pipeline_logger.logger.info(f"Extracting album info")
+pipeline_logger.logger.info(f"Extracting album info from Spotify")
 album_ids = album_id_list(raw_track_list)
 album_info = get_albums(SpotifyApiClient=spotify_client,album_ids=album_ids)
 album_dict_result = get_album_dict(album_info)
 
-pipeline_logger.logger.info(f"Loading album info")
+pipeline_logger.logger.info(f"Loading album info into database")
 load_album(PostgreSqlClient=postgres_client,list=album_dict_result) 
 
 
