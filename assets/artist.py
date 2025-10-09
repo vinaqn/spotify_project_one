@@ -24,15 +24,12 @@ def artist_id_list(tracks=list) -> list:
 
 
 
-def get_artists(SpotifyApiClient =SpotifyApiClient,artist_ids=pd.DataFrame) -> dict:
+def get_artists(SpotifyApiClient =SpotifyApiClient,artist_list=list) -> dict:
     """This function gets data about artists, 50 at a time. stores the data points as
     a string of dictionary"""
     
     #construct the header to pass in the access token
     header={"Authorization": f"{SpotifyApiClient.token_type} {SpotifyApiClient.access_token}"}
-
-    #get list of artists
-    artist_list=artist_ids['artist_id'].tolist()
 
     dict_list=[]
 
