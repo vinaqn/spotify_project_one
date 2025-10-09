@@ -4,11 +4,11 @@ import pandas as pd
 import os
 import requests
 from assets.track_id_list import extract_track_id_list
+from connectors.postgres import PostgreSqlClient
+from sqlalchemy import Table, Column, MetaData, String,Integer
+from sqlalchemy.dialects import postgresql
+from sqlalchemy.dialects.postgresql import ARRAY
 
-load_dotenv()
-
-API_KEY_ID = os.environ.get("spotify_client_id")
-API_SECRET_KEY = os.environ.get("spotify_client_secret")
 
 def get_tracks(SpotifyApiClient=SpotifyApiClient,track_ids=pd.DataFrame) -> pd.DataFrame:
     """This function gets all the tracks available on spotify"""
@@ -33,14 +33,10 @@ def get_tracks(SpotifyApiClient=SpotifyApiClient,track_ids=pd.DataFrame) -> pd.D
         ids = ','.join(sub_list)
         #make the API call with the list of 50 ids
         response_json=requests.get(f"{SpotifyApiClient.base_url}/tracks?ids={ids}",headers=header).json()
-        # print ("hello world")
-        # print (response_json)
+
         #append the response to the main_list of tracks
         main_list.extend(response_json['tracks'])
 
-    #print (main_list[10])
-    # print (main_list[10]['album']['artists'][0]['name'])
-    # print (main_list[10]['album']['name'])
     return main_list
 
 def track_id_dict(tracks=list) -> list:
@@ -67,15 +63,15 @@ def load_tracks(PostgreSqlClient=PostgreSqlClient, track_list=list):
     metadata=MetaData()
 
     #metadata
-    track_table=Table('album',metadata,
+    track_table=Table('tracks',metadata,
                           Column('track_id',String,primary_key=True),
                           Column('track_name',String),
                           Column('album_name',String),
                           Column('album_id',String),
                           Column('album_type',String),
                           Column('artist_name',String),
-                          Column('artist_id',Integer),
-                          Column('markets',String)
+                          Column('artist_id',String),
+                          Column('markets',ARRAY(String))
     )
 
     metadata.create_all(PostgreSqlClient.engine)
@@ -93,23 +89,33 @@ def load_tracks(PostgreSqlClient=PostgreSqlClient, track_list=list):
 
     return
 
-#changing something to check git
-#changing something to check git 2
-
 #tests --------
+
+load_dotenv()
+
+
+API_KEY_ID = os.environ.get("spotify_client_id")
+API_SECRET_KEY = os.environ.get("spotify_client_secret")
+
+DB_SERVER_NAME= os.environ.get("DB_SERVER_NAME")
+DB_DATABASE_NAME = os.environ.get("DB_DATABASE_NAME")
+DB_USERNAME = os.environ.get("DB_USERNAME")
+DB_PASSWORD = os.environ.get("DB_PASSWORD")
+DB_PORT = os.environ.get("DB_PORT")
+
 spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
+
+postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
+                                db_database_name=DB_DATABASE_NAME,
+                                db_username=DB_USERNAME,
+                                db_password=DB_PASSWORD,
+                                db_port=DB_PORT)
 
 #tracks_id5000 is a small sample of track_ids for testing purposes(saves time)
 file_path="data/track_ids100.csv"
 track_list=extract_track_id_list(file_path=file_path)
 
-tester = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list)
-track_dict_result = track_id_dict(tester)
-df = pd.DataFrame(track_dict_result)
-#print (df[['album_name','track_name']])
-#print (track_dict_result[0:10])
+raw_track_table = get_tracks(SpotifyApiClient=spotify_client,track_ids=track_list)
+track_dict_result = track_id_dict(raw_track_table)
 
-# print (tester[0]['album']['uri'])
-# print("hello world")
-# print(tester[0])
-#tester.to_csv("tester.csv",index=False)
+load_tracks(PostgreSqlClient=postgres_client, track_list=track_dict_result)
