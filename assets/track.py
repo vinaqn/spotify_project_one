@@ -79,6 +79,7 @@ def load_tracks(PostgreSqlClient=PostgreSqlClient, track_list=list):
 
     with PostgreSqlClient.engine.begin() as conn: # opens a trasaction
 
+        #a posgresql insert statement can insert only 65535/{number of columns}. creating 1000-sized chunks
         for i in range(0,len(track_list),1000):   
             sub_list = track_list[i:i+1000]
 
