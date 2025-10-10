@@ -48,7 +48,7 @@ postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
 #load track_ids
 pipeline_logger.logger.info(f"Loading track ids from csv into database")
 
-file_path="data/test_track_ids100.csv"
+file_path="data/test_track_ids5000.csv"
 track_ids = extract_track_id_list(file_path=file_path)
 load_track_ids(PostgreSqlClient=postgres_client, track_ids=track_ids)
 
