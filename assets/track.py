@@ -45,14 +45,14 @@ def track_id_dict(tracks=list) -> list:
 
     for i in range(0,len(tracks)):        
         track_dict = {
-            'track_name' : tracks[i]['name'],
+            'track_name' : tracks[i]['name'], # type: ignore
             'track_id' : tracks[i]['id'],
-            'album_name' : tracks[i]['album']['name'],
-            'album_id' : tracks[i]['album']['uri'][14:],
-            'album_type' : tracks[i]['album']['album_type'],
-            'artist_name' : tracks[i]['album']['artists'][0]['name'],
-            'artist_id' : tracks[i]['album']['artists'][0]['id'],
-            'markets' : tracks[i]['album']['available_markets']
+            'album_name' : tracks[i]['album']['name'], # type: ignore
+            'album_id' : tracks[i]['album']['uri'][14:], # type: ignore
+            'album_type' : tracks[i]['album']['album_type'], # type: ignore
+            'artist_name' : tracks[i]['album']['artists'][0]['name'], # type: ignore
+            'artist_id' : tracks[i]['album']['artists'][0]['id'], # type: ignore
+            'markets' : tracks[i]['album']['available_markets'] # type: ignore
         }
 
         track_dict_list.append(track_dict)
@@ -76,14 +76,28 @@ def load_tracks(PostgreSqlClient=PostgreSqlClient, track_list=list):
 
     metadata.create_all(PostgreSqlClient.engine)
 
-    insert_statement=postgresql.insert(track_table).values(track_list)
+
+    with PostgreSqlClient.engine.begin() as conn: # opens a trasaction
+
+        for i in range(0,len(track_list),1000):   
+            sub_list = track_list[i:i+1000]
+
+            insert_statement=postgresql.insert(track_table).values(sub_list)
+            
+            upsert_statement=insert_statement.on_conflict_do_update(
+                index_elements=['track_id'],
+                #for each column not part of the conflict key, update it to the new value
+                set_={c.key: c for c in insert_statement.excluded if c.key not in ['track_id']}) 
+            
+
+            try:
+                conn.execute(upsert_statement)
+                print(f"Inserted {i}-{min(i+1000, len(track_list))}")
+            except Exception as e:
+                print(f"❌ Error at chunk {i}-{min(i+1000, len(track_list))}: {e}")
+            
     
-    upsert_statement=insert_statement.on_conflict_do_update(
-        index_elements=['track_id'],
-        #for each column not part of the conflict key, update it to the new value
-        set_={c.key: c for c in insert_statement.excluded if c.key not in ['track_id']}) 
     
-    PostgreSqlClient.engine.execute(upsert_statement)
 
     print('uploaded to database')
 

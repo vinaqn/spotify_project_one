@@ -58,6 +58,8 @@ def get_artists(SpotifyApiClient =SpotifyApiClient,artist_list=list) -> dict:
 def load_artist(PostgresSqlClient: PostgreSqlClient, list:list):
     metadata=MetaData()
 
+    print(list[0:11])
+
     #construct the metadata
     artist_table=Table('artist',metadata,
                           Column('artist_id',String,primary_key=True),

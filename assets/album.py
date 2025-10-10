@@ -50,21 +50,21 @@ def get_album_dict(albums_list=list) -> list:
     for i in range(0,len(albums_list)):        
         album_dict = {
             'album_id' : albums_list[i]['id'],
-            'album_name' : albums_list[i]['name'],
+            'album_name' : albums_list[i]['name'], # type: ignore
             'album_type' : albums_list[i]['album_type'], # type: ignore
-            'artist_id' : albums_list[i]['artists'][0]['id'],
-            'album_release_date' : albums_list[i]['release_date'],
-            'release_date_precision' : albums_list[i]['release_date_precision'],
-            'total_tracks' : albums_list[i]['tracks']['total'],
-            'track_list' : albums_list[i]['tracks']['items'][0]['name'],
-            'label' : albums_list[i]['label'],
-            'popularity' : albums_list[i]['popularity'],
-            'markets' : albums_list[i]['available_markets']
+            'artist_id' : albums_list[i]['artists'][0]['id'], # type: ignore
+            'album_release_date' : albums_list[i]['release_date'], # type: ignore
+            'release_date_precision' : albums_list[i]['release_date_precision'], # type: ignore
+            'total_tracks' : albums_list[i]['tracks']['total'], # type: ignore
+            'track_list' : albums_list[i]['tracks']['items'][0]['name'], # type: ignore
+            'label' : albums_list[i]['label'], # type: ignore
+            'popularity' : albums_list[i]['popularity'], # type: ignore
+            'markets' : albums_list[i]['available_markets'] # type: ignore
         }
 
-        if len(albums_list[i]['tracks']['items']) > 1:
-            for j in range(1,len(albums_list[i]['tracks']['items'])):
-                album_dict['track_list'] = album_dict['track_list'] + ", " + albums_list[i]['tracks']['items'][j]['name']
+        if len(albums_list[i]['tracks']['items']) > 1: # type: ignore
+            for j in range(1,len(albums_list[i]['tracks']['items'])): # type: ignore
+                album_dict['track_list'] = album_dict['track_list'] + ", " + albums_list[i]['tracks']['items'][j]['name'] # type: ignore
 
         album_dict_list.append(album_dict)
 
