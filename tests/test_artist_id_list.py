@@ -18,4 +18,4 @@ def test_artist_id_list_dedup_and_order_irrelevant():
     print(out)
     assert set(out) == {"A", "B", "C"}
 
-    #to call: python -m pytest -q tests\test_artist_id_list.py
+    #to call: python -m pytest tests\test_artist_id_list.py
