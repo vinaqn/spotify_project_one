@@ -1,19 +1,14 @@
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from connectors.spotify import SpotifyApiClient
 import pandas as pd
 import os
 import requests
-from assets.artist_id_list import extract_artist_id_list
 from connectors.postgres import PostgreSqlClient
 from sqlalchemy import Table, Column, MetaData, String,Integer,DateTime
 from sqlalchemy.dialects import postgresql
 import time
 
 
-load_dotenv()
-
-API_KEY_ID = os.environ.get("spotify_client_id")
-API_SECRET_KEY = os.environ.get("spotify_client_secret")
 
 def artist_id_list(tracks=list) -> list:
     artist_id_list = set() #using a set for deduplication
@@ -91,6 +86,11 @@ def load_artist(PostgresSqlClient: PostgreSqlClient, list:list):
 
 
 ### tests
+
+# load_dotenv()
+
+# API_KEY_ID = os.environ.get("spotify_client_id")
+# API_SECRET_KEY = os.environ.get("spotify_client_secret")
 # spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
 
