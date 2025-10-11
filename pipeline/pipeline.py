@@ -71,7 +71,7 @@ artist_id_list=artist_id_list(raw_track_list)
 artist_dict_list=get_artists(SpotifyApiClient=spotify_client, artist_list=artist_id_list)
 
 pipeline_logger.logger.info(f"Loading artist info into database")
-load_artist(PostgresSqlClient=postgres_client, list=artist_dict_list)
+load_artist(PostgreSqlClient=postgres_client, list=artist_dict_list)
 
 #extracting and loading categories
 pipeline_logger.logger.info(f"Extracting categories from Spotify")

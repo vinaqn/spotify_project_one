@@ -55,10 +55,10 @@ def get_artists(SpotifyApiClient =SpotifyApiClient,artist_list=list) -> dict:
     return dict_list
 
 
-def load_artist(PostgresSqlClient: PostgreSqlClient, list:list):
+def load_artist(PostgreSqlClient: PostgreSqlClient, list:list):
     metadata=MetaData()
 
-    print(list[0:11])
+    # print(list[0:11])
 
     #construct the metadata
     artist_table=Table('artist',metadata,
@@ -71,17 +71,28 @@ def load_artist(PostgresSqlClient: PostgreSqlClient, list:list):
     )
 
     #creates the table if does not exist
-    metadata.create_all(PostgresSqlClient.engine)
+    metadata.create_all(PostgreSqlClient.engine)
 
-    #have to create the insert statement first to then create upsert statement
-    insert_statement=postgresql.insert(artist_table).values(list)
-    
-    upsert_statement =insert_statement.on_conflict_do_update(
-        index_elements=['artist_id'],
-        #for each column not part of the conflict key, update it to the new value
-        set_={c.key: c for c in insert_statement.excluded if c.key not in ['artist_id']}) 
-    
-    PostgresSqlClient.engine.execute(upsert_statement)
+    with PostgreSqlClient.engine.begin() as conn: # opens a trasaction
+
+        #a posgresql insert statement can insert only 65535/{number of columns}. creating 1000-sized chunks
+        for i in range(0,len(list),1000):   
+            sub_list = list[i:i+1000]
+
+            #have to create the insert statement first to then create upsert statement
+            insert_statement=postgresql.insert(artist_table).values(sub_list)
+            
+            upsert_statement =insert_statement.on_conflict_do_update(
+                index_elements=['artist_id'],
+                #for each column not part of the conflict key, update it to the new value
+                set_={c.key: c for c in insert_statement.excluded if c.key not in ['artist_id']}) 
+            
+            try:
+                conn.execute(upsert_statement)
+                print(f"Inserted {i}-{min(i+1000, len(list))}")
+            except Exception as e:
+                print(f"❌ Error at chunk {i}-{min(i+1000, len(list))}: {e}")
+            
 
     print('uploaded to database')
 
