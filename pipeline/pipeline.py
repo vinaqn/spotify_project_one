@@ -94,7 +94,7 @@ load_album(PostgreSqlClient=postgres_client,list=album_dict_result)
 
 #transform
 
-transform_environment=Environment(loader=FileSystemLoader("sql"))
+transform_environment=Environment(loader=FileSystemLoader("transform/sql"))
 
 pipeline_logger.logger.info(f"Creating serving_album table")
 serving_album=SqlTransform(PostgreSqlClient=postgres_client,
