@@ -1,0 +1,7 @@
+2025-10-10 18:55:23,685 - spotify_project - INFO - Starting spotify_project
+2025-10-10 18:55:23,685 - spotify_project - INFO - Loading environment variables
+2025-10-10 18:55:23,687 - spotify_project - INFO - Creating Spotify API client
+2025-10-10 18:55:23,827 - spotify_project - INFO - Creating PostgreSQL client
+2025-10-10 18:55:24,033 - spotify_project - INFO - Loading track ids from csv into database
+2025-10-10 18:55:24,207 - spotify_project - INFO - Extracting track information from Spotify
+2025-10-10 18:56:03,095 - spotify_project - INFO - Loading track information into database

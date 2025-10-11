@@ -5,7 +5,7 @@ import os
 import requests
 from assets.track_id_list import extract_track_id_list
 from connectors.postgres import PostgreSqlClient
-from sqlalchemy import Table, Column, MetaData, String
+from sqlalchemy import Table, Column, MetaData, String, Integer
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.dialects.postgresql import ARRAY
 
@@ -24,6 +24,8 @@ def get_tracks(SpotifyApiClient=SpotifyApiClient,track_ids=pd.DataFrame) -> pd.D
     #convert the master list into a dataframe and return it
 
     track_list = track_ids["track_id"].tolist()
+
+    track_list=list(set(track_list))    #dedupe
     main_list = []
 
     for i in range(0, len(track_list), 50):
@@ -52,7 +54,9 @@ def track_id_dict(tracks=list) -> list:
             'album_type' : tracks[i]['album']['album_type'], # type: ignore
             'artist_name' : tracks[i]['album']['artists'][0]['name'], # type: ignore
             'artist_id' : tracks[i]['album']['artists'][0]['id'], # type: ignore
-            'markets' : tracks[i]['album']['available_markets'] # type: ignore
+            'markets' : tracks[i]['album']['available_markets'], # type: ignore
+            'duration_ms' : tracks[i]['duration_ms'], # type: ignore
+            'popularity' : tracks[i]['popularity']# type: ignore
         }
 
         track_dict_list.append(track_dict)
@@ -61,6 +65,8 @@ def track_id_dict(tracks=list) -> list:
 
 def load_tracks(PostgreSqlClient=PostgreSqlClient, track_list=list):
     metadata=MetaData()
+
+    #print(track_list[0:3])
 
     #metadata
     track_table=Table('tracks',metadata,
@@ -71,7 +77,9 @@ def load_tracks(PostgreSqlClient=PostgreSqlClient, track_list=list):
                           Column('album_type',String),
                           Column('artist_name',String),
                           Column('artist_id',String),
-                          Column('markets',ARRAY(String))
+                          Column('markets',ARRAY(String)),
+                          Column('duration_ms',Integer),
+                          Column('popularity',Integer)
     )
 
     metadata.create_all(PostgreSqlClient.engine)
