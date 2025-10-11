@@ -92,15 +92,23 @@ def load_album(PostgreSqlClient=PostgreSqlClient, list=list):
     #creates the table if does not exist
     metadata.create_all(PostgreSqlClient.engine)
 
-    #have to create the insert statement first to then create upsert statement
-    insert_statement=postgresql.insert(album_table).values(list)
-    
-    upsert_statement =insert_statement.on_conflict_do_update(
-        index_elements=['album_id'],
-        #for each column not part of the conflict key, update it to the new value
-        set_={c.key: c for c in insert_statement.excluded if c.key not in ['album_id']}) 
-    
-    PostgreSqlClient.engine.execute(upsert_statement)
+    with PostgreSqlClient.engine.begin() as conn: # opens a trasaction
+        #have to create the insert statement first to then create upsert statement
+
+        for i in range(0,len(list),1000):   
+            sub_list = list[i:i+1000]
+            insert_statement=postgresql.insert(album_table).values(sub_list)
+            
+            upsert_statement =insert_statement.on_conflict_do_update(
+                index_elements=['album_id'],
+                #for each column not part of the conflict key, update it to the new value
+                set_={c.key: c for c in insert_statement.excluded if c.key not in ['album_id']}) 
+            
+            try:
+                conn.execute(upsert_statement)
+                print(f"Inserted {i}-{min(i+1000, len(list))}")
+            except Exception as e:
+                print(f"❌ Error at chunk {i}-{min(i+1000, len(list))}: {e}")
 
     print('uploaded to database')
 
