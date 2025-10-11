@@ -103,3 +103,10 @@ serving_album=SqlTransform(PostgreSqlClient=postgres_client,
 
 serving_album.create_table_as()
 
+pipeline_logger.logger.info(f"Creating serving_artist_track_stats table")
+serving_artist_track_stats=SqlTransform(PostgreSqlClient=postgres_client,
+                            environment=transform_environment,
+                            table_name="serving_artist_track_stats")
+
+serving_artist_track_stats.create_table_as()
+
