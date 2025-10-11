@@ -55,10 +55,10 @@ def get_artists(SpotifyApiClient =SpotifyApiClient,artist_list=list) -> dict:
     return dict_list
 
 
-def load_artist(PostgresSqlClient: PostgreSqlClient, list:list):
+def load_artist(PostgreSqlClient: PostgreSqlClient, list:list):
     metadata=MetaData()
 
-    print(list[0:11])
+    # print(list[0:11])
 
     #construct the metadata
     artist_table=Table('artist',metadata,
@@ -71,7 +71,7 @@ def load_artist(PostgresSqlClient: PostgreSqlClient, list:list):
     )
 
     #creates the table if does not exist
-    metadata.create_all(PostgresSqlClient.engine)
+    metadata.create_all(PostgreSqlClient.engine)
 
     with PostgreSqlClient.engine.begin() as conn: # opens a trasaction
 
@@ -93,8 +93,6 @@ def load_artist(PostgresSqlClient: PostgreSqlClient, list:list):
             except Exception as e:
                 print(f"❌ Error at chunk {i}-{min(i+1000, len(list))}: {e}")
             
-
-            PostgresSqlClient.engine.execute(upsert_statement)
 
     print('uploaded to database')
 
