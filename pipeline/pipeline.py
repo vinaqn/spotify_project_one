@@ -7,6 +7,8 @@ from assets.categories import get_categories, load_categories
 from assets.extract_ids import extract_track_id_list, extract_artist_id_list_from_track_ids
 from assets.album import get_albums, get_album_dict, load_album, album_id_list
 from assets.pipeline_logger import PipelineLogger
+from jinja2 import Environment, FileSystemLoader
+from transform.sql_transform import SqlTransform
 import os
 
 pipeline_logger=PipelineLogger("spotify_project","logs")
@@ -89,4 +91,15 @@ album_dict_result = get_album_dict(album_info)
 pipeline_logger.logger.info(f"Loading album info into database")
 load_album(PostgreSqlClient=postgres_client,list=album_dict_result) 
 
+
+#transform
+
+transform_environment=Environment(loader=FileSystemLoader("sql"))
+
+pipeline_logger.logger.info(f"Creating serving_album table")
+serving_album=SqlTransform(PostgreSqlClient=postgres_client,
+                            environment=transform_environment,
+                            table_name="serving_album")
+
+serving_album.create_table_as()
 
