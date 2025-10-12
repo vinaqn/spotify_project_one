@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.engine import URL
 
 class PostgreSqlClient:
@@ -39,6 +39,11 @@ class PostgreSqlClient:
         
         except:
              print("Could not connect to the database. Check your connection string.")
+
+    #Creates tables provided in the metadata object"
+    def create_all_tables(self, metadata: MetaData) -> None:
+        metadata.create_all(self.engine)
+
 
         
 
