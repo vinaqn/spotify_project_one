@@ -23,3 +23,6 @@ ENV LOGGING_PORT=5432
 RUN pip install -r requirements.txt
 
 CMD ["python", "-m","pipeline.pipeline"]
+
+#docker build -t spotify_project_one:1.0 .
+#docker run --env-file .env  spotify_project_one:1.0
