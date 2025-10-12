@@ -42,6 +42,7 @@ LOGGING_PORT = os.environ.get("LOGGING_PORT")
 
 #instantiate Spotify API Client
 pipeline_logger.logger.info(f"Creating Spotify API client")
+
 spotify_client=SpotifyApiClient(API_KEY_ID,API_SECRET_KEY)
 
 #instantiate PostgreSQL client
@@ -51,6 +52,7 @@ postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
                                 db_username=DB_USERNAME,
                                 db_password=DB_PASSWORD,
                                 db_port=DB_PORT)
+
 
 #logging database client
 pipeline_logger.logger.info(f"Creating Metadata Logging Client")
