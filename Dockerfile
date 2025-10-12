@@ -1,8 +1,10 @@
 FROM python:3.9
 
-WORKDIR /app
+#set up directory in docker image
+WORKDIR /app 
 
-COPY . /app
+#copy current local directory {.} to docker directory {/app}
+COPY . /app 
 
 ENV API_KEY_ID=""
 ENV API_SECRET_KEY=""
