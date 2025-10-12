@@ -41,3 +41,12 @@ class PipelineLogger:
 
         #saves configured logger to be called
         self.logger=logger
+
+    def get_logs(self, n: int = 0) -> str:
+        """Return the last n lines from the log file. If n=0, return all lines."""
+        with open(self.file_path, "r") as file:
+            lines = file.readlines()
+            if n == 0:
+                return "".join(lines)
+            else:
+                return "".join(lines[-n:])
