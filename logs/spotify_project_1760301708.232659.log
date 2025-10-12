@@ -1,0 +1,5 @@
+2025-10-12 13:41:48,232 - spotify_project - INFO - Starting spotify_project
+2025-10-12 13:41:48,232 - spotify_project - INFO - Loading environment variables
+2025-10-12 13:41:48,238 - spotify_project - INFO - Creating Spotify API client
+2025-10-12 13:41:48,432 - spotify_project - INFO - Creating PostgreSQL client
+2025-10-12 13:41:48,597 - spotify_project - INFO - Creating Metadata Logging Client
