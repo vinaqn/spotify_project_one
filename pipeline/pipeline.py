@@ -145,7 +145,15 @@ albums_metadata_logging.log(status=MetaDataLoggingStatus.RUN_SUCCESS, logs=pipel
 
 #transform
 
-#metadata logging for transforms?
+#metadata logging for transforms
+pipeline_logger.logger.info(f"Starting transformations")
+
+#instantiate transform metadata logger
+transform_metadata_logging = MetaDataLogging(
+    pipeline_name="transformations", postgresql_client=postgresql_metadata_logging_client
+)
+transform_metadata_logging.log(status=MetaDataLoggingStatus.RUN_START)
+transformations = 0
 
 transform_environment=Environment(loader=FileSystemLoader("transform/sql"))
 
@@ -155,6 +163,7 @@ serving_album=SqlTransform(PostgreSqlClient=postgres_client,
                             table_name="serving_album")
 
 serving_album.create_table_as()
+transformations += 1
 
 pipeline_logger.logger.info(f"Creating serving_artist_track_stats table")
 serving_artist_track_stats=SqlTransform(PostgreSqlClient=postgres_client,
@@ -162,4 +171,6 @@ serving_artist_track_stats=SqlTransform(PostgreSqlClient=postgres_client,
                             table_name="serving_artist_track_stats")
 
 serving_artist_track_stats.create_table_as()
+transformations += 1
 
+transform_metadata_logging.log(status=MetaDataLoggingStatus.RUN_SUCCESS, logs=pipeline_logger.get_logs(transformations))
