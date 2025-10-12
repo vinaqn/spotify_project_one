@@ -1,8 +1,10 @@
 FROM python:3.9
 
-WORKDIR /app
+#set up directory in docker image
+WORKDIR /app 
 
-COPY . /app
+#copy current local directory {.} to docker directory {/app}
+COPY . /app 
 
 ENV API_KEY_ID=""
 ENV API_SECRET_KEY=""
@@ -21,3 +23,6 @@ ENV LOGGING_PORT=5432
 RUN pip install -r requirements.txt
 
 CMD ["python", "-m","pipeline.pipeline"]
+
+#docker build -t spotify_project_one:1.0 .
+#docker run --env-file .env  spotify_project_one:1.0
