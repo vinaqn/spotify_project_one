@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.engine import URL
+from assets.pipeline_logger import PipelineLogger
 
 class PostgreSqlClient:
     """a client to connect to a postgresql database"""
@@ -9,7 +10,8 @@ class PostgreSqlClient:
                  db_database_name:str, 
                  db_username: str,
                  db_password: str,
-                 db_port: int =5432
+                 logger: PipelineLogger,
+                 db_port: int =5432,
                  ):
         
         #set the database details
@@ -26,19 +28,21 @@ class PostgreSqlClient:
             password=db_password,
             host=db_server_name,
             port=db_port,
-            database=db_database_name,
+            database=db_database_name
         )
 
         #engine
         try: 
-            self.engine=create_engine(connection_url, echo=False)
+            self.engine=create_engine(connection_url,connect_args={"ssl_context": True}, pool_pre_ping=True, echo=False)
 
             with self.engine.connect() as connection:
                     connection.execute("SELECT 1")
-                    print("Connection is alive and responsive.")
+
+                    logger.logger.info(f"Connection is alive and responsive.")
+                
         
         except:
-             print("Could not connect to the database. Check your connection string.")
+             logger.logger.error(f"Could not connect to database.")
 
     #Creates tables provided in the metadata object"
     def create_all_tables(self, metadata: MetaData) -> None:
