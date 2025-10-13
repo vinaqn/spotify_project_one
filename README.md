@@ -1,21 +1,33 @@
-# Project Plan	#
-The objective of our project is to pull datasets from Spotify using the Spotify API, load it into a data warehouse, and perform basic analyses. 
+# Project Overview	#
+The main goal of this project is to build and deploy an ELT pipeline on AWS using the skills we learned in our data engineering bootcamp. We use the Spotify API to collect data on tracks, albums, and artists, then load it into a database to run basic analyses.
 
 ## Consumers
-The users of our dataset will be the data analytics team.
+The users of our dataset will be the data analytics team, hobbyists, or students.
 
 ## Questions
+* Which artists have the most albums?
 * What is the average number of tracks on an album?
 * What are the top 5 popular tracks in each album?
 * Which album has the highest average track popularity? Which album has the longest average track duration?
 * How many songs does each artist have? What is an artist's average length of a song versus their longest song?
 
-## Source
-Dataset	Spotify API(REST API)
-https://developer.spotify.com/documentation/web-api
+## Source Datasets
+The table below lists where we sourced our datasets from. The csv file is the only static file. 
+
+| Source name | Source type | Source documentation |
+| - | - | - |
+| track_ids.csv | csv |https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset|
+| Spotify Tracks API| REST API |https://developer.spotify.com/documentation/web-api|
+| Spotify Albums API| REST API |https://developer.spotify.com/documentation/web-api|
+| Spotify Artists API  | REST API |https://developer.spotify.com/documentation/web-api|
+| Spotify Categories API  | REST API |https://developer.spotify.com/documentation/web-api|
+| Spotify Markets API  | REST API |https://developer.spotify.com/documentation/web-api|
 
 ## Solution Architecture 	
 TBA
+
+## Lessons Learnt
+* What is the average number of tracks on an album?
 
 ## Docker Container Deployed to AWS Screenshots
 
