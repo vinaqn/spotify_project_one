@@ -178,3 +178,5 @@ serving_artist_track_stats.create_table_as()
 transformations += 1
 
 transform_metadata_logging.log(status=MetaDataLoggingStatus.RUN_SUCCESS, logs=pipeline_logger.get_logs(transformations))
+
+pipeline_logger.logger.info(f"Pipeline finished successfully.")
