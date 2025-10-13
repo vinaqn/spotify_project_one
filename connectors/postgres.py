@@ -33,10 +33,13 @@ class PostgreSqlClient:
 
         #engine
         try: 
-            self.engine=create_engine(connection_url,connect_args={"ssl_context": True}, pool_pre_ping=True, echo=False)
+            self.engine=create_engine(connection_url, echo=False)
+
+            logger.logger.info(f"our connection url looks like this: {connection_url}")
 
             with self.engine.connect() as connection:
                     connection.execute("SELECT 1")
+                    
 
                     logger.logger.info(f"Connection is alive and responsive.")
                 
