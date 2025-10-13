@@ -51,7 +51,8 @@ postgres_client=PostgreSqlClient(db_server_name=DB_SERVER_NAME,
                                 db_database_name=DB_DATABASE_NAME,
                                 db_username=DB_USERNAME,
                                 db_password=DB_PASSWORD,
-                                db_port=DB_PORT)
+                                db_port=DB_PORT,
+                                logger=pipeline_logger)
 
 
 #logging database client
@@ -62,6 +63,7 @@ postgresql_metadata_logging_client = PostgreSqlClient(
     db_username=LOGGING_USERNAME,
     db_password=LOGGING_PASSWORD,
     db_port=LOGGING_PORT,
+    logger=pipeline_logger
 )
 
 #instantiate tracks metadata logger
