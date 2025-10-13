@@ -24,7 +24,8 @@ The table below lists where we sourced our datasets from. The csv file is the on
 | Spotify Markets API  | REST API |https://developer.spotify.com/documentation/web-api|
 
 ## Solution Architecture 	
-TBA
+<img width="1850" height="1034" alt="DataArchitectureDiagram" src="https://github.com/user-attachments/assets/e6e40a52-706f-46cb-b76e-450f2e28c743" />
+
 
 ## Lessons Learnt
 * What is the average number of tracks on an album?
