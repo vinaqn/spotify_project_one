@@ -7,14 +7,14 @@ The users of our dataset will be the data analytics team, hobbyists, or students
 ## Source Datasets
 The table below lists where we sourced our datasets from. The csv file is the only static file. 
 
-| Source name | Source type | Source documentation |
+| Source name | Source type | Source documentation | Extract Type | Load Type
 | - | - | - |
-| track_ids.csv | csv |https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset|
-| Spotify Tracks API| REST API |https://developer.spotify.com/documentation/web-api|
-| Spotify Albums API| REST API |https://developer.spotify.com/documentation/web-api|
-| Spotify Artists API  | REST API |https://developer.spotify.com/documentation/web-api|
-| Spotify Categories API  | REST API |https://developer.spotify.com/documentation/web-api|
-| Spotify Markets API  | REST API |https://developer.spotify.com/documentation/web-api|
+| track_ids.csv | csv |https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset| Full Extract | Upsert |
+| Spotify Tracks API| REST API |https://developer.spotify.com/documentation/web-api| Full Extract | Upsert|
+| Spotify Albums API| REST API |https://developer.spotify.com/documentation/web-api| Full Extract | Upsert|
+| Spotify Artists API  | REST API |https://developer.spotify.com/documentation/web-api| Full Extract| Upsert|
+| Spotify Categories API  | REST API |https://developer.spotify.com/documentation/web-api| Full Extract | Upsert |
+| Spotify Markets API  | REST API |https://developer.spotify.com/documentation/web-api| Full Extract | Upsert |
 
 ## Solution Architecture 	
 
