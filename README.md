@@ -9,7 +9,7 @@ The table below lists where we sourced our datasets from. The csv file is the on
 
 | Source name | Source type | Source documentation | Extract Type | Load Type
 | - | - | - | - | - |
-| track_ids.csv | csv |https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset| Full Extract | Upsert |
+| track_ids.csv | csv |https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset| Full Extract | Full Load |
 | Spotify Tracks API| REST API |https://developer.spotify.com/documentation/web-api| Full Extract | Upsert|
 | Spotify Albums API| REST API |https://developer.spotify.com/documentation/web-api| Full Extract | Upsert|
 | Spotify Artists API  | REST API |https://developer.spotify.com/documentation/web-api| Full Extract| Upsert|
