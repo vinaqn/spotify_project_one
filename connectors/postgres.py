@@ -35,7 +35,7 @@ class PostgreSqlClient:
         try: 
             self.engine=create_engine(connection_url, echo=False)
 
-            logger.logger.info(f"our connection url looks like this: {connection_url}")
+            # logger.logger.info(f"our connection url looks like this: {connection_url}")
 
             with self.engine.connect() as connection:
                     connection.execute("SELECT 1")
